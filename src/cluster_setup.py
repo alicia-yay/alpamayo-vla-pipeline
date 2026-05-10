@@ -31,11 +31,13 @@ SYSTEM_PY = "/home/ray/anaconda3/bin/python"
 # dependency versions (e.g. transformers must be pinned BEFORE alpamayo1_5
 # so alpamayo doesn't quietly upgrade it).
 INSTALL_COMMANDS = [
-    f"{SYSTEM_PY} -m pip install --ignore-installed --upgrade scipy",
+    f"{SYSTEM_PY} -m pip install --no-cache-dir --no-deps scipy==1.16.0",
     f"{SYSTEM_PY} -m pip install --ignore-installed torch==2.8.0",
+    f"{SYSTEM_PY} -m pip install --no-cache-dir --no-deps torchvision==0.23.0",
     f"{SYSTEM_PY} -m pip install --ignore-installed physical-ai-av==0.2.0",
     f"{SYSTEM_PY} -m pip install --ignore-installed einops",
     f"{SYSTEM_PY} -m pip install --ignore-installed transformers==4.57.1",
+    f"{SYSTEM_PY} -m pip install --no-cache-dir hydra-core omegaconf iopath av",
     f"{SYSTEM_PY} -m pip install --ignore-installed --no-deps git+https://github.com/NVlabs/alpamayo1.5.git",
 ]
 
@@ -106,10 +108,11 @@ def main():
     os.environ.pop("RAY_RUNTIME_ENV_HOOK", None)
     ray.init(ignore_reinit_error=True)
 
-    # One install task per alive node. SPREAD scheduling guarantees one
-    # task per node when num_cpus is tiny.
-    num_nodes = len([n for n in ray.nodes() if n["Alive"]])
-    print(f"Found {num_nodes} alive nodes; dispatching install task per node")
+    # One install task per alive GPU node. Head and CPU-only workers don't
+    # need alpamayo deps; only nodes that will actually run the model do.
+    gpu_nodes = [n for n in ray.nodes() if n["Alive"] and n["Resources"].get("GPU", 0) > 0]
+    num_nodes = len(gpu_nodes)
+    print(f"Found {num_nodes} alive GPU nodes; dispatching install task per node")
 
     results: List[dict] = ray.get([install_on_node.remote() for _ in range(num_nodes)])
 

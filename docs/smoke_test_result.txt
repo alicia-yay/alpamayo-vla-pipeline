@@ -1,0 +1,26 @@
+=== SMOKE TEST PASSED on A100-80GB ===
+
+GPU: NVIDIA A100-SXM4-80GB (80 GB VRAM)
+Date: 2026-05-09
+
+Model: Alpamayo-1.5-10B
+  Total params:     11.08B
+  Trainable:        2.28B  (20.6%)
+  Frozen backbone:  Cosmos-Reason2-8B (8.798B)
+  Trainable expert: 2.279B
+  
+Sample: PhysicalAI-AV NCore subset
+  clip_id: 25cd4769-5dcf-4b53-a351-bf2c5deb6124
+  
+Memory profile (bfloat16, eager attention, batch=1):
+  After model load:    22.17 GB
+  After forward:       22.59 GB
+  After backward:      26.75 GB
+
+Loss: 1.976562 (finite flow matching MSE)
+Gradients: OK (flowed through all trainable params)
+
+Hardware sizing:
+  L4 24GB:   OOMs at peak 23.3 GB during forward (insufficient)
+  A100-80GB: 26.75 GB peak with full forward + backward (~5x headroom)
+  H100-80GB: equivalent to A100, also fits comfortably
