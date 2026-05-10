@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1280" font-family="Helvetica, Arial, sans-serif">
+  <rect width="1100" height="1280" fill="#ffffff"/>
+
+  <text x="550" y="44" text-anchor="middle" font-size="22" font-weight="600" fill="#1a1a1a">
+    Alpamayo VLA Pipeline on Anyscale
+  </text>
+  <text x="550" y="68" text-anchor="middle" font-size="13" fill="#666666">
+    What the model does, and how Anyscale runs it at scale
+  </text>
+
+  <!-- ============== ANYSCALE OUTER WRAPPER ============== -->
+  <rect x="40" y="100" width="1020" height="1130" rx="14" fill="#fff8f1" stroke="#e5b97f" stroke-width="3"/>
+  <text x="70" y="130" font-size="15" font-weight="600" fill="#a85d12">Anyscale</text>
+  <text x="70" y="148" font-size="11" fill="#a85d12">Managed Ray cluster: head node + auto-scaled CPU and GPU workers</text>
+
+  <!-- ============== RAY DATA REGION (CPU pool, contains inputs) ============== -->
+  <rect x="80" y="170" width="940" height="280" rx="10" fill="#ffffff" stroke="#e5b97f" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="100" y="195" font-size="13" font-weight="600" fill="#a85d12">Ray Data (CPU pool, auto-scaled)</text>
+  <text x="100" y="212" font-size="11" fill="#666">NCoreDatasource (~200 lines) wraps NVIDIA's load_physical_aiavdataset; backpressure to GPU stage</text>
+
+  <!-- Inputs cards -->
+  <text x="550" y="248" text-anchor="middle" font-size="14" font-weight="600" fill="#2c5282">Inputs (per training sample)</text>
+
+  <rect x="110" y="265" width="280" height="160" rx="6" fill="#f7f9fc" stroke="#9bb4d6"/>
+  <text x="250" y="289" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">4 cameras x 4 frames</text>
+  <text x="250" y="312" text-anchor="middle" font-size="11" fill="#4a5568">front_wide_120, front_tele_30,</text>
+  <text x="250" y="328" text-anchor="middle" font-size="11" fill="#4a5568">cross_left_120, cross_right_120</text>
+  <text x="250" y="354" text-anchor="middle" font-size="11" fill="#666">1080 x 1920 at 10 Hz</text>
+  <text x="250" y="370" text-anchor="middle" font-size="11" fill="#666">0.4 sec history (4 frames)</text>
+  <text x="250" y="396" text-anchor="middle" font-size="10" fill="#888" font-family="Menlo, monospace">tensor: (4, 4, 3, 1080, 1920)</text>
+
+  <rect x="410" y="265" width="280" height="160" rx="6" fill="#f7f9fc" stroke="#9bb4d6"/>
+  <text x="550" y="289" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Ego history</text>
+  <text x="550" y="312" text-anchor="middle" font-size="11" fill="#4a5568">Where the truck just was</text>
+  <text x="550" y="328" text-anchor="middle" font-size="11" fill="#4a5568">16 steps over 1.6 sec</text>
+  <text x="550" y="370" text-anchor="middle" font-size="10" fill="#888" font-family="Menlo, monospace">xyz: (1, 1, 16, 3)</text>
+  <text x="550" y="386" text-anchor="middle" font-size="10" fill="#888" font-family="Menlo, monospace">rot: (1, 1, 16, 3, 3)</text>
+
+  <rect x="710" y="265" width="280" height="160" rx="6" fill="#f7f9fc" stroke="#9bb4d6"/>
+  <text x="850" y="289" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Source: PhysicalAI-AV</text>
+  <text x="850" y="312" text-anchor="middle" font-size="11" fill="#4a5568">NCore subset, 1148 clips</text>
+  <text x="850" y="328" text-anchor="middle" font-size="11" fill="#4a5568">zarr-itar archives via HF Hub</text>
+  <text x="850" y="370" text-anchor="middle" font-size="10" fill="#888" font-family="Menlo, monospace">physical_ai_av==0.2.0</text>
+  <text x="850" y="386" text-anchor="middle" font-size="11" fill="#666">NVIDIA loader on PyPI</text>
+
+  <!-- Arrow Ray Data -> Ray Train -->
+  <line x1="550" y1="455" x2="550" y2="495" stroke="#a85d12" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="568" y="482" font-size="11" fill="#a85d12">batched samples</text>
+
+  <!-- ============== RAY TRAIN REGION (GPU workers, contains model + output) ============== -->
+  <rect x="80" y="505" width="940" height="700" rx="10" fill="#ffffff" stroke="#e5b97f" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="100" y="530" font-size="13" font-weight="600" fill="#a85d12">Ray Train (GPU workers, DDP)</text>
+  <text x="100" y="547" font-size="11" fill="#666">N x A100-80GB or H100-80GB; ScalingConfig.num_workers controls parallelism; checkpoint and fault recovery built in</text>
+
+  <!-- Model -->
+  <rect x="110" y="570" width="880" height="395" rx="10" fill="#f5f0fa" stroke="#a78bca" stroke-width="2"/>
+  <text x="550" y="599" text-anchor="middle" font-size="16" font-weight="600" fill="#5b3fa3">Alpamayo-1.5-10B (Vision-Language-Action)</text>
+
+  <rect x="140" y="620" width="820" height="100" rx="6" fill="#ffffff" stroke="#a78bca"/>
+  <text x="550" y="644" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a1a">Vision and reasoning (Cosmos-Reason2-8B)</text>
+  <text x="550" y="666" text-anchor="middle" font-size="12" fill="#4a5568">Encodes camera frames, generates chain-of-causation reasoning text</text>
+  <text x="550" y="685" text-anchor="middle" font-size="11" fill="#4a5568">Example: "stay in lane, traffic light green, no pedestrians visible"</text>
+  <text x="550" y="708" text-anchor="middle" font-size="11" fill="#888">8.8B parameters, frozen during fine-tuning</text>
+
+  <line x1="550" y1="720" x2="550" y2="755" stroke="#999" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="140" y="765" width="820" height="120" rx="6" fill="#ffffff" stroke="#a78bca"/>
+  <text x="550" y="789" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a1a">Action expert (diffusion)</text>
+  <text x="550" y="811" text-anchor="middle" font-size="12" fill="#4a5568">Conditions on VLM hidden states, denoises trajectory in unicycle action space</text>
+  <text x="550" y="831" text-anchor="middle" font-size="12" fill="#4a5568">Action = (acceleration, curvature) per timestep</text>
+  <text x="550" y="855" text-anchor="middle" font-size="11" fill="#888">2.28B parameters, trainable (20.6 percent of total)</text>
+  <text x="550" y="872" text-anchor="middle" font-size="11" fill="#888">Trained with flow matching loss: MSE on velocity field</text>
+
+  <text x="550" y="940" text-anchor="middle" font-size="11" fill="#5b3fa3">
+    Total parameters: 11.08B   |   Trainable: 2.28B   |   bfloat16, eager attention
+  </text>
+
+  <!-- Output -->
+  <line x1="550" y1="965" x2="550" y2="1000" stroke="#999" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="110" y="1010" width="880" height="180" rx="10" fill="#f0f9f4" stroke="#7fc99f" stroke-width="2"/>
+  <text x="550" y="1040" text-anchor="middle" font-size="16" font-weight="600" fill="#1a6e3c">Output: 64-waypoint trajectory</text>
+  <text x="550" y="1063" text-anchor="middle" font-size="12" fill="#4a5568">Where the truck should drive over the next 6.4 seconds at 10 Hz</text>
+  <text x="550" y="1095" text-anchor="middle" font-size="11" fill="#888" font-family="Menlo, monospace">xyz: (1, 1, 64, 3)        rot: (1, 1, 64, 3, 3)</text>
+  <text x="550" y="1130" text-anchor="middle" font-size="12" fill="#4a5568">Loss compares predicted waypoints to ground truth from PhysicalAI-AV ego trajectories</text>
+  <text x="550" y="1160" text-anchor="middle" font-size="11" fill="#666">L4 24GB OOMs at peak 23.3 GB during forward; A100-80GB or H100-80GB needed for full forward + backward</text>
+
+  <!-- Footer note -->
+  <text x="550" y="1255" text-anchor="middle" font-size="11" fill="#666">
+    Single-file pipeline that scales from 1 GPU to N GPUs without code changes
+  </text>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#999"/>
+    </marker>
+  </defs>
+</svg>
