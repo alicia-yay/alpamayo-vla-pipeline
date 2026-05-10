@@ -114,5 +114,8 @@ python tests/test_pipeline.py
 
 ## References
 
-* [NVlabs/alpamayo1.5](https://github.com/NVlabs/alpamayo1.5) (inference)
-* [NVlabs/alpamayo](https://github.com/NVlabs/alpamayo) (SFT and RL training code)
+* Lipman et al., [Flow Matching for Generative Modeling](https://arxiv.org/abs/2210.02747), 2022. The training objective used here.
+* Zheng et al., [Guided Flows for Generative Modeling and Decision Making](https://arxiv.org/abs/2311.13443), 2023. The classifier-free guidance variant Alpamayo uses at inference.
+* [NVlabs/alpamayo1.5](https://github.com/NVlabs/alpamayo1.5). Inference code and model architecture.
+* [NVlabs/alpamayo](https://github.com/NVlabs/alpamayo). Supervised fine-tuning and RL training code, Apache-2.0. The flow matching loss in `src/action_loss.py` is ported from this repository.
+* [NVIDIA Alpamayo-1.5-10B model card](https://huggingface.co/nvidia/Alpamayo-1.5-10B). Memory and accuracy benchmarks on H100.
