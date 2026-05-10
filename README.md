@@ -3,7 +3,7 @@
 Reference for fine-tuning NVIDIA's [Alpamayo-1.5-10B](https://huggingface.co/nvidia/Alpamayo-1.5-10B) on the [PhysicalAI-Autonomous-Vehicles](https://huggingface.co/datasets/nvidia/PhysicalAI-Autonomous-Vehicles) dataset, using Ray Data and Ray Train on Anyscale.
 
 <p align="center">
-  <img src="media/architecture.png" alt="Architecture diagram" width="900"/>
+  <img src="media/architecture.svg" alt="Architecture diagram" width="900"/>
 </p>
 
 ## Validation
