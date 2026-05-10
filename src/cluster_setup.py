@@ -13,7 +13,6 @@ environments and isn't required when we use attn_implementation="eager").
 
 Run once after starting the cluster, then again to verify all nodes are OK.
 
-Source: alicia-yay, 2026
 """
 
 import os

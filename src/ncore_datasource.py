@@ -12,7 +12,6 @@ Why a custom datasource and not ray.data.read_*():
     just need to surface it to Ray Data as one row per sample.
   - Avoids a 1-2 TB Parquet preprocessing step.
 
-Source: alicia-yay, 2026
 """
 
 from __future__ import annotations
